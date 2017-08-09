@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>component</title>
+</head>
+<body>
+<div><input type="text" id="j_input"></div>
+<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script>
+    /*function Login(){
+        this.id1 = 'id1';
+        var id2 = 'id2';
+        this.doLogin2 = function(){alert(id2);};    /!*与id2相同作用域的函数调用id2*!/
+    }
+
+    Login.prototype.doLogin1 = function(){
+        alert(this.id1);
+    };
+
+    var test = new Login();
+    test.doLogin1();    /!*不加()，即把log当变量用*!/
+    test.doLogin2();*/
+
+    function GetCount(config) {
+        var input = $(config.id);
+//        this.input = $(config.id);
+
+        var bind = function() {                     /*定义变量和函数有区别？*/
+            input.on("keyup", function () {
+                render()
+            })
+        };
+
+        var getNum = function() {
+            return input.val().length
+        };
+
+        /*function getNum() {
+            return input.val().length
+        }*/
+
+        var render = function() {
+            var num_c = $("#count");
+            var num = getNum();
+            if (num_c.length == 0) {          /*初始化容器*/
+                input.after("<span id='count' style='margin-left: 5px;display: inline-block'></span>");
+                /*注意每一个变量都加this*/
+            }
+            num_c.html(num + "个字")
+        };
+        this.ini = function(){
+            bind();
+            render()
+        }
+    }
+    new GetCount({id:"#j_input"}).ini();
+</script>
+</body>
+</html>
+
+<!--能不能访问到闭包里的对象？-->

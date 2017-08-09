@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>magnifier</title>
+    <style>
+        .container{
+            width:400px;
+            height:224px;
+            position: relative;     /*父元素relative利于子代布局*/
+            float: left;
+            margin-right: 10px;
+        }
+        .container>img{
+            width:100%;
+            display: block;
+        }
+        .magnifier{
+            position: absolute;
+            width:100px;
+            height:56px;
+            background-color: rgba(126, 250, 215, 0.25);
+        }
+
+        .show{
+            width:400px;
+            height:224px;
+            position: relative;
+            overflow: hidden;   /*隐藏超出元素*/
+        }
+        .max{
+            width:1600px;
+            position: absolute;
+        }
+        .max>img{
+            width:100%;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="magnifier"></div>
+        <img src="small.jpg">
+    </div>
+    <div class="show"><div class="max"><img src="1.jpg"></div></div>
+
+<script>
+    var container = document.querySelector(".container"),
+        max = document.querySelector(".max"),
+        img = document.querySelector(".max img"),
+        magnifier = document.querySelector(".magnifier");
+
+    container.onmouseout = function(){
+        max.style.display = "none";
+        magnifier.style.display = "none";
+    };
+    container.onmousemove = function(e){
+//      放大镜的左边缘和上边缘
+        var x = e.clientX-container.offsetLeft-magnifier.offsetWidth/2;
+        var y = e.clientY-container.offsetTop-magnifier.offsetHeight/2;
+//      放大镜的最右的左边缘和最下的上边缘
+        var maxX = container.offsetWidth - magnifier.offsetWidth;
+        var maxY = container.offsetHeight - magnifier.offsetHeight;
+
+        if(x > maxX){
+            x = maxX
+        }else if(x < 0){
+            x = 0
+        }
+
+        if(y > maxY){
+            y = maxY
+        }else if(y < 0){
+            y = 0
+        }
+
+        magnifier.style.display = "block";
+        magnifier.style.left = x + "px";
+        magnifier.style.top = y + "px";
+
+//        数学的计算：放大镜宽*放大图片的宽 = 放大容器宽的平方
+        kx = x/container.offsetWidth;
+        ky = y/container.offsetHeight;
+
+        max.style.display = "block";
+        max.style.left = -kx * max.offsetWidth + "px";
+        max.style.top = -ky * max.offsetHeight + "px";
+    }
+
+</script>
+</body>
+</html>

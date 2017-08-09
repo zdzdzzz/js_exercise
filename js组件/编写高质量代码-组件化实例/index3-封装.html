@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>component</title>
+</head>
+<body>
+<div><input type="text" id="j_input"></div>
+<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script>
+    var CountTxt = (function(){
+//        var _input = null;      不用
+//        私有属性和方法，只能内部调用，不能外部访问或修改；函数即指针，如何定义都是按名称调用
+        var _bind = function(that){
+            that.input.on("keyup", function(){      /*用that指代this对象*/
+                that.render()
+            })
+        };
+        function count(that){
+            return that.input.val().length
+        }
+        var getCount = function(config){                /*记得加config*/
+
+        };
+
+        getCount.prototype.init = function(config){          /*原型能不能访问子代*/
+            /*var _input = config.id;                       var与this.区别:var是局部变量，this是对象本身的值，需要被其他变量调用或改变
+            _bind(_input);*/
+//            初始化设置config，配置input
+            this.input = $(config.id);
+            _bind(this);                                    /*能不能访问到_bind;只用传this这个对象，其他的在传入的函数内部实现*/
+            return this
+        };
+
+        getCount.prototype.render = function(){
+            var num_c = $("#count");                    /*用var而不是this，因为局部有效，不需要传递*/
+            var num = count(this);
+            if(num_c.length == 0){          /*初始化容器*/
+                this.input.after("<span id='count' style='margin-left: 5px;display: inline-block'></span>");        /*注意每一个变量都加this*/
+            }
+            num_c.html(num + "个字")
+        };
+//      返回构造函数
+        return getCount;     /*外界访问不到与getCount同级别的变量*/
+    })();
+
+//    构造函数内部定义局部函数也能达到同样目的？
+
+    $(function(){
+//        countTxt.init({id:"#j_input"}).render()
+        new CountTxt().init({id:"#j_input"}).render();       /*用config传入所有配置参数;只调用，不能修改内部结构，即封装起来?*/
+    })
+</script>
+</body>
+</html>
+
+<!--能不能访问到闭包里的对象？-->

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>component</title>
+</head>
+<body>
+<div><input type="text" id="j_input"></div>
+<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script>
+    $(function(){
+                var input = $("#j_input");
+
+                input.on("keyup",function(){
+                    render()
+                });
+
+                function render(){
+                    var countSpan = $("#count");
+                    var count = getNum();
+                    if(countSpan.length == 0){          /*初始化容器*/
+                        input.after("<span id='count' style='margin-left: 5px;display: inline-block'></span>");
+                    }
+                    countSpan.html(count + "个字")
+                }
+
+                function getNum(){
+                    return input.val().length
+                }
+
+                render()
+            }
+    )
+</script>
+</body>
+</html>

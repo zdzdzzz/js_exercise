@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>slider</title>
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            border:0;
+        }
+
+        .wrap{
+            width:400px;
+            height:200px;
+            position: relative;         /*设置成relative，方便邻代布局，可让子代用absolute布局*/
+            margin:0 auto;
+            overflow: hidden;           /*absolute的子元素也要hidden*/
+        }
+
+        .inner{
+            width:600%;
+            height:100%;
+            position: relative;         /*设为relative方便子代设宽，实现排好img，移动inner实现轮播而不是移动img，float实现不了left定位*/
+        }
+        .inner>img{
+            width:16.66%;           /*16.67%会溢出，第六张图片在下面*/
+            height:100%;
+            float: left;
+        }
+
+        .btnContainer{
+            position: absolute;
+            bottom: 10px;
+            right:25px;
+        }
+        .btnContainer>span{
+            padding:5px;
+            border:1px rgba(0, 0, 0, 0.27) solid;
+            display: inline-block;
+            line-height: 10px;
+            width:10px;
+            height:10px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+        }
+        .btnContainer>span:hover{
+            background-color: #7d8517;
+            color: white;
+        }
+        .selected{
+            background-color: #7d8517;
+            color: white;
+        }
+
+        .mark{
+            position: absolute;
+            width:20px;
+            text-align: center;
+            height:200px;
+            line-height: 200px;
+            top:0;                      /*因为上面有absolute元素*/
+            cursor: pointer;            /*手势*/
+        }
+        .mark:hover{
+            background-color: rgba(39, 39, 39, 0.4);
+        }
+        .left{
+            left:0;
+        }
+        .right{
+            right: 0;
+        }
+
+    </style>
+</head>
+<body>
+<div class="wrap" id="wrap">
+    <div id="inner" class="inner">
+        <img src="img/1.jpg" alt="呵呵呵">
+        <img src="img/2.jpg" alt="">
+        <img src="img/3.jpg" alt="">
+        <img src="img/4.jpg" alt="">
+        <img src="img/5.jpg" alt="">
+        <img src="img/1.jpg" alt="">
+    </div>
+    <div class="btnContainer" id="btnContainer">
+        <span class="selected">1</span>
+        <span>2</span>
+        <span>3</span>
+        <span>4</span>
+        <span>5</span>
+    </div>
+    <div class="mark left" id="left"><</div>
+    <div class="mark right" id="right">></div>
+</div>
+
+<script>
+    var $ = function(id){
+        return document.getElementById(id)
+    };
+
+//    面向对象写法的优势，封装变量？继承
+
+    var Effect = (function(){
+        var Slider = function(config){
+            this.setting = typeof 'object' ? config : {};
+            this.target = this.setting.target || 'slider';
+            this.time = this.setting.time;
+            this.autoShow = this.setting.autoShow;
+
+            this.ini();
+            this.addHandleEvent();
+        };
+
+        Slider.prototype = {                       /*或slider.prototype.ini = function()*/
+            ini : function(){
+                this.btnList = $("btnContainer").getElementsByTagName("span");      /*初始化全局变量，引用时需用this.xx*/
+                this.len = this.btnList.length;
+                this.flagClick = true;
+                this.index = 0;
+                this.inner = $("inner");
+                this.wrapWidth = $("wrap").offsetWidth;
+            },
+            addHandleEvent :function(){
+                var left = $("left");                                  /* var局部变量*/
+                var right = $("right");
+                var self = this;
+
+                for(var i = 0; i < this.len; i++){
+                    self.btnList[i].onclick = function(){
+                        self.index = this.innerHTML - 1;        /*注意this的指向，分清this与self*/
+                        self.autoGo();
+                    }
+                }
+
+                left.onclick = function(){
+                    if(self.flagClick){
+                        self.flagClick = false;
+                        self.goPrevious();
+                    }
+                };
+                right.onclick = function(){
+                    if(self.flagClick){
+                        self.flagClick = false;
+                        self.goNext();
+                    }
+                };
+            },
+
+            autoGo : function(){
+                var startLeft = this.inner.offsetLeft;
+                var endLeft = (this.index) * this.wrapWidth * (-1);
+                var change = endLeft - startLeft;
+
+                var i = 0;
+                var inter = 30;
+                var self = this;
+
+                this.clearBtn();
+                if(this.index >= this.len){
+                    this.btnList[0].className = "selected";
+                }else{
+                    this.btnList[this.index].className = "selected";
+                }
+
+                var timer = setInterval(function(){
+                    i++;
+                    inner.style.left = startLeft + change/inter*i + "px";
+                    if(i >= inter){
+                        self.flagClick = true;
+                        clearInterval(timer)
+                    }
+                },17)
+            },
+
+            clearBtn : function(){
+                for(var i = 0; i < this.len; i++){
+                    this.btnList[i].className = ""
+                }
+            },
+
+            goNext : function (){
+                this.index++;
+                if(this.index > this.len){
+                    this.index = 1;                  /*把目前最后一张的迅速切换为第一张；时间很短；达到从第一张切换到第二张的目的*/
+                    this.inner.style.left = 0
+                }
+                this.autoGo()
+            },
+            goPrevious : function (){
+                this.index--;
+                if(this.index < 0){
+                    this.index = this.len - 1;
+                    this.inner.style.left = this.wrapWidth * this.len * (-1) + "px"
+                }
+                this.autoGo()
+            }
+        };
+
+        return {
+            slider :function(config){
+                var a = new Slider(config)
+            }
+        }
+    })();
+    Effect.slider({})
+
+</script>
+
+</body>
+</html>

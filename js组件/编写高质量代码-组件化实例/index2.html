@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>component</title>
+</head>
+<body>
+<div><input type="text" id="j_input"></div>
+<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script>
+    var count = {
+        input : null,
+        ini : function(config){
+            this.input = $(config.id);
+            this.bind();
+            return this;             /*实现链式调用*/
+        },
+        bind : function(){
+            var self = this;        /*改变上下文环境*/
+            this.input.on("keyup", function(){
+                self.render()
+            })
+        },
+        render : function(){
+            var num_c = $("#count");
+            var num = this.getNum();
+            if(num_c.length == 0){          /*初始化容器*/
+                this.input.after("<span id='count' style='margin-left: 5px;display: inline-block'></span>");        /*注意每一个变量都加this*/
+            }
+            num_c.html(num + "个字")
+        },
+        getNum : function(){
+            return this.input.val().length
+        }
+    };
+    $(function(){
+        count.ini({id:"#j_input"}).render()
+    })
+</script>
+</body>
+</html>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>slider</title>
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            border:0;
+        }
+
+        .wrap{
+            width:400px;
+            height:200px;
+            position: relative;         /*设置成relative，方便邻代布局，可让子代用absolute布局*/
+            margin:0 auto;
+            overflow: hidden;           /*absolute的子元素也要hidden*/
+        }
+
+        .inner{
+            width:600%;
+            height:100%;
+            position: relative;         /*设为relative方便子代设宽，实现排好img，移动inner实现轮播而不是移动img，float实现不了left定位*/
+        }
+        .inner>img{
+            width:16.66%;           /*16.67%会溢出，第六张图片在下面*/
+            height:100%;
+            float: left;
+        }
+
+        .btnContainer{
+            position: absolute;
+            bottom: 10px;
+            right:25px;
+        }
+        .btnContainer>span{
+            padding:5px;
+            border:1px rgba(0, 0, 0, 0.27) solid;
+            display: inline-block;
+            line-height: 10px;
+            width:10px;
+            height:10px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+        }
+        .btnContainer>span:hover{
+            background-color: #7d8517;
+            color: white;
+        }
+        .selected{
+            background-color: #7d8517;
+            color: white;
+        }
+
+        .mark{
+            position: absolute;
+            width:20px;
+            text-align: center;
+            height:200px;
+            line-height: 200px;
+            top:0;                      /*因为上面有absolute元素*/
+            cursor: pointer;            /*手势*/
+        }
+        .mark:hover{
+            background-color: rgba(39, 39, 39, 0.4);
+        }
+        .left{
+            left:0;
+        }
+        .right{
+            right: 0;
+        }
+
+    </style>
+</head>
+<body>
+<div class="wrap" id="wrap">
+    <div id="inner" class="inner">
+        <img src="img/1.jpg" alt="呵呵呵">
+        <img src="img/2.jpg" alt="">
+        <img src="img/3.jpg" alt="">
+        <img src="img/4.jpg" alt="">
+        <img src="img/5.jpg" alt="">
+        <img src="img/1.jpg" alt="">
+    </div>
+    <div class="btnContainer" id="btnContainer">
+        <span class="selected">1</span>
+        <span>2</span>
+        <span>3</span>
+        <span>4</span>
+        <span>5</span>
+    </div>
+    <div class="mark left" id="left"><</div>
+    <div class="mark right" id="right">></div>
+</div>
+
+<script>
+    var $ = function(id){
+        return document.getElementById(id)
+    };
+
+    var wrap = $("wrap");
+    var inner = $("inner");
+    var btnContainer = $("btnContainer");
+    var btnList = btnContainer.getElementsByTagName("span");
+    var left = $("left");
+    var right = $("right");
+
+//    逻辑写好，再写控制
+    /*如何模拟轮播：先写一个轮播框，当图片超出框时overflow：hidden。图片从左向右排列float：left，被inner包裹。框display：relative，方便内部的数字btn，左右btn定位。
+     控制：每个左右btn对应左右切换动画autoGo，数字btn通过自身编号控制画面停留位置
+    轮播逻辑：autoGo：通过停留的位置索引index，计算最终停留的位置，即inner.style.left。通过setTnterval不断改变left值完成切换动画。同时改变数字btn的样式
+             当图片处于最左时，切换到下一页，需将数字btn样式变为1，但图片过渡是第六幅。从第1（实际是6）切换到2时，轮播前迅速将6切换至1，再轮播
+    控制：数字和左右btn均可控制*/
+
+    var index = 0;
+    var time;
+    var wrapWidth = wrap.offsetWidth;
+    var len = btnList.length;
+    var flagClick = true;
+
+    function autoGo(){
+        var startLeft = inner.offsetLeft;              /*  startLeft可以重新获取初始状态，也可保留上一次状态*/
+        var endLeft = index * wrapWidth * (-1);
+        var change = endLeft - startLeft;
+
+        var i = 0;
+        var inter = 30;
+
+        clearBtn();
+        if(index >= len){
+            btnList[0].className = "selected";
+        }else{
+            btnList[index].className = "selected";
+        }
+
+        timer = setInterval(function(){             /*类似于for循环，用if结束*/
+            i++;
+            inner.style.left = startLeft + change/inter*i + "px";           /*会把内部执行完再clear！！！！*/
+            if(i >= inter){
+                flagClick = true;
+                clearInterval(timer)
+            }
+        },17)
+
+    }
+
+    function clearBtn(){
+        for(var i = 0; i < len; i++){
+            btnList[i].className = ""
+        }
+    }
+
+    for(var i = 0; i < len; i++){
+        btnList[i].onclick = function(){
+            index = this.innerHTML - 1;         /*用this指代btnList[i]，也可用e.target，如果innerHTML不是数字可自定义属性为数字或用数字数组对应或jquery的index*/
+            autoGo();
+        }
+    }
+
+    function goNext(){
+        index++;
+        if(index > len){
+            index = 1;                  /*把目前最后一张的迅速切换为第一张；时间很短；达到从第一张切换到第二张的目的*/
+            inner.style.left = 0
+        }
+        autoGo()
+    }
+    function goPrevious(){
+        index--;
+        if(index < 0){
+            index = len - 1;
+            inner.style.left = wrapWidth * len * (-1) + "px"
+        }
+        autoGo()
+    }
+
+    left.onclick = function(){
+        if(flagClick){                         /*互锁，轮播过程中锁住不能点击运行，轮播结束可再次轮播*/
+            flagClick = false;
+            goPrevious();
+        }
+    };
+    right.onclick = function(){
+        if(flagClick){
+            flagClick = false;
+            goNext();
+        }
+    };
+
+    var flag  = false;
+
+//    自动轮播，同时不影响按钮
+
+    time = setInterval(function(){
+        goNext();
+    },3000);             /*直接gonext而不用autogo*/
+
+
+</script>
+
+</body>
+</html>
