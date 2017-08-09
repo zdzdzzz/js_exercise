@@ -1,0 +1,17 @@
+*{
+    margin:0;
+    padding: 0;
+}
+.tab{
+    width:70%;
+    margin:0 auto;
+}
+.tab-menu{
+    list-style-type:none;
+}
+.tab-menu>li{
+    float: left;
+    border:1px solid black;
+    margin-right: 5px;
+    padding: 5px;
+}

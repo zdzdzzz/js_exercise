@@ -1,0 +1,39 @@
+*{
+    margin:0;
+    padding: 0;
+}
+.tab{
+    width:70%;
+    margin:20px auto;
+}
+.tab-menu{
+    list-style-type:none;
+}
+.tab-menu-item{
+    float: left;
+    margin-right: 5px;
+    padding: 5px;
+    border:1px solid black;
+    border-bottom: none;
+}
+.tab-content{
+    clear: left;
+    border: 1px solid black;
+}
+.tab-content-item{
+    display: none;
+}
+.tab-content-item:first-child{
+    display: block;
+}
+
+.tab-currentMenu1{
+    background-color: #333;
+    color: #fff;
+}
+.tab-currentMenu2{
+    background-color: #333;
+    color: blue;
+}
+
+

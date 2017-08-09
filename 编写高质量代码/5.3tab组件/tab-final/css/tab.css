@@ -1,0 +1,45 @@
+*{
+    margin:0;
+    padding: 0;
+}
+.tab{
+    width:70%;
+    margin:20px auto;
+}
+.tab-menu{
+    list-style-type:none;
+    overflow: auto;     /*清除浮动*/
+}
+/*.tab-menu:after{          !*清除浮动*!
+    content:"";
+    display: block;
+    clear: both;
+}*/
+.tab-menu-item{
+    float: left;
+    margin-right: 5px;
+    padding: 5px;
+    border:1px solid black;
+    border-bottom: none;    /*不与content的border-top重合*/
+}
+.tab-content{
+    /*clear: left;*/ /*清除浮动*/
+    border: 1px solid black;
+}
+.tab-content-item{
+    display: none;
+}
+.tab-content-item:first-child{
+    display: block;
+}
+
+.tab-currentMenu1{
+    background-color: #333;
+    color: #fff;
+}
+.tab-currentMenu2{
+    background-color: #333;
+    color: blue;
+}
+
+
